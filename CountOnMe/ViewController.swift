@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     
     // Error check computed variables
     var expressionIsCorrect: Bool {
-        return elements.last != "+" && elements.last != "-"
+        return elements.last != "+" && elements.last != "-" && elements.last != "x" && elements.last != "/"
     }
     
     var expressionHaveEnoughElement: Bool {
@@ -26,7 +26,7 @@ class ViewController: UIViewController {
     }
     
     var canAddOperator: Bool {
-        return elements.last != "+" && elements.last != "-"
+        return elements.last != "+" && elements.last != "-" && elements.last != "x" && elements.last != "/"
     }
     
     var expressionHaveResult: Bool {
@@ -72,7 +72,27 @@ class ViewController: UIViewController {
             self.present(alertVC, animated: true, completion: nil)
         }
     }
-
+    
+    @IBAction func tappedMultiplicationButton(_ sender: UIButton) {
+        if canAddOperator {
+            textView.text.append(" x ")
+        } else {
+            let alertVC = UIAlertController(title: "Zéro!", message: "Un operateur est déja mis !", preferredStyle: .alert)
+            alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            self.present(alertVC, animated: true, completion: nil)
+        }
+    }
+    
+    @IBAction func tappedDivisionButton(_ sender: UIButton) {
+        if canAddOperator {
+            textView.text.append(" / ")
+        } else {
+            let alertVC = UIAlertController(title: "Zéro!", message: "Un operateur est déja mis !", preferredStyle: .alert)
+            alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            self.present(alertVC, animated: true, completion: nil)
+        }
+    }
+    
     @IBAction func tappedEqualButton(_ sender: UIButton) {
         guard expressionIsCorrect else {
             let alertVC = UIAlertController(title: "Zéro!", message: "Entrez une expression correcte !", preferredStyle: .alert)
@@ -91,14 +111,24 @@ class ViewController: UIViewController {
         
         // Iterate over operations while an operand still here
         while operationsToReduce.count > 1 {
-            let left = Int(operationsToReduce[0])!
+            let left = Double(operationsToReduce[0])!
             let operand = operationsToReduce[1]
-            let right = Int(operationsToReduce[2])!
+            let right = Double(operationsToReduce[2])!
             
-            let result: Int
+            let result: Any
             switch operand {
-            case "+": result = left + right
-            case "-": result = left - right
+            case "+": result = Int(left + right)
+            case "-": result = Int(left - right)
+            case "x": result = Int(left * right)
+            case "/":
+                guard right != 0 else {
+                    let ac = UIAlertController(title: "Opération impossible", message: "Il est impossible de diviser par 0", preferredStyle: .alert)
+                    ac.addAction(UIAlertAction(title: "OK", style: .cancel))
+                    present(ac, animated: true)
+                    textView.text = ""
+                    return
+                }
+                result = left / right
             default: fatalError("Unknown operator !")
             }
             
@@ -110,4 +140,3 @@ class ViewController: UIViewController {
     }
 
 }
-

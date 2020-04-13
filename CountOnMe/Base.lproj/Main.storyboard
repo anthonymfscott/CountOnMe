@@ -189,6 +189,9 @@
                                         <state key="normal" title="x">
                                             <color key="titleColor" red="0.97651617690000003" green="1" blue="0.97654517070000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         </state>
+                                        <connections>
+                                            <action selector="tappedMultiplicationButton:" destination="eqK-jh-KKu" eventType="touchUpInside" id="VnU-iU-HOA"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3zO-7G-SEu">
                                         <rect key="frame" x="182" y="0.0" width="45.5" height="63"/>
@@ -197,6 +200,9 @@
                                         <state key="normal" title="/">
                                             <color key="titleColor" red="0.97651617690000003" green="1" blue="0.97654517070000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         </state>
+                                        <connections>
+                                            <action selector="tappedDivisionButton:" destination="eqK-jh-KKu" eventType="touchUpInside" id="0A8-4R-39r"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qMj-Of-bCU">
                                         <rect key="frame" x="242.5" y="0.0" width="45.5" height="63"/>
