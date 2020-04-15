@@ -21,7 +21,7 @@ class ViewController: UIViewController {
         return elements.last != "+" && elements.last != "-" && elements.last != "x" && elements.last != "/"
     }
     
-    var expressionHaveEnoughElement: Bool {
+    var expressionHasEnoughElements: Bool {
         return elements.count >= 3
     }
     
@@ -29,7 +29,7 @@ class ViewController: UIViewController {
         return elements.last != "+" && elements.last != "-" && elements.last != "x" && elements.last != "/"
     }
     
-    var expressionHaveResult: Bool {
+    var expressionHasResult: Bool {
         return textView.text.firstIndex(of: "=") != nil
     }
     
@@ -46,7 +46,7 @@ class ViewController: UIViewController {
             return
         }
         
-        if expressionHaveResult {
+        if expressionHasResult {
             textView.text = ""
         }
         
@@ -100,7 +100,7 @@ class ViewController: UIViewController {
             return self.present(alertVC, animated: true, completion: nil)
         }
         
-        guard expressionHaveEnoughElement else {
+        guard expressionHasEnoughElements else {
             textView.text = ""
             let alertVC = UIAlertController(title: "Zéro !", message: "Démarrez un nouveau calcul !", preferredStyle: .alert)
             alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
