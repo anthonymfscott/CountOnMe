@@ -36,7 +36,7 @@ class Expression {
                 case "-": result = left - right
                 case "x": result = left * right
                 case "/": result = left / right
-                default: fatalError("Opérateur inconnu!")
+                default: fatalError("Opérateur inconnu !")
             }
             
             elements = Array(elements.dropFirst(3))
@@ -44,6 +44,14 @@ class Expression {
         }
         
         return elements.first!
+    }
+    
+    func add(_ newElement: String) {
+        if elements.count > 0 && Int(newElement) != nil && Int(elements.last!) != nil {
+            elements[elements.count - 1] += newElement
+        } else {
+            elements.append(newElement)
+        }
     }
     
     func reset() {

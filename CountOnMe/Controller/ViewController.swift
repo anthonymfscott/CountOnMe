@@ -9,7 +9,7 @@
 import UIKit
 
 private enum Error {
-    case sign, incomplete, short
+    case lastElementIsSign, expressionIncomplete, expressionTooShort
 }
 
 class ViewController: UIViewController {
@@ -22,58 +22,56 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        textView.text = ""
         expression = Expression()
     }
     
     // View actions
     @IBAction private func numberButtonTapped(_ sender: UIButton) {
-        guard let numberText = sender.title(for: .normal) else {
-            return
+        guard let numberText = sender.title(for: .normal) else { return }
+        
+        if textView.containsEqualSign {
+            reset()
         }
         
-        if textView.text.firstIndex(of: "=") != nil {
-            textView.text = ""
-            expression.reset()
-        }
-        
-        textView.text.append(numberText)
-        
-        if expression.elements.count > 0 && Int(expression.elements[expression.elements.count - 1]) != nil {
-            expression.elements[expression.elements.count - 1] += numberText
-        } else {
-            expression.elements.append(numberText)
-        }
+        textView.text += numberText
+        expression.add(numberText)
     }
     
     @IBAction private func signButtonTapped(_ sender: UIButton) {
-        guard let sign = sender.title(for: .normal) else {
-            return
+        guard let sign = sender.title(for: .normal) else { return }
+
+        if textView.containsEqualSign {
+            textView.text = expression.elements[0]
         }
         
         if expression.canAddOperator {
-            addSign(sign)
+            textView.text += " \(sign) "
+            expression.add(sign)
         } else {
-            showErrorMessage(.sign)
+            showErrorMessage(.lastElementIsSign)
         }
     }
     
-    private func addSign(_ sign: String) {
-        textView.text.append(" \(sign) ")
-        expression.elements.append(sign)
-    }
-    
     @IBAction private func equalButtonTapped(_ sender: UIButton) {
+        if textView.containsEqualSign { return }
+        
         guard expression.isCorrect else {
-            showErrorMessage(.incomplete)
+            showErrorMessage(.expressionIncomplete)
             return
         }
         
         guard expression.hasEnoughElements else {
-            showErrorMessage(.short)
+            showErrorMessage(.expressionTooShort)
             return
         }
         
         textView.text.append(" = \(expression.result)")
+    }
+    
+    private func reset() {
+        textView.text = ""
+        expression.reset()
     }
     
     private func showErrorMessage(_ error: Error) {
@@ -81,13 +79,13 @@ class ViewController: UIViewController {
         var message: String
         
         switch error {
-        case .sign:
+        case .lastElementIsSign:
             title = "Erreur !"
-            message = "Un opérateur est déjà mis !"
-        case .incomplete:
+            message = "Il y a déjà un opérateur !"
+        case .expressionIncomplete:
             title = "Expression incomplète !"
             message = "Veuillez entrer une expression correcte."
-        case .short:
+        case .expressionTooShort:
             title = "Expression trop courte !"
             message = "Veuillez démarrer un nouveau calcul."
         }
@@ -96,8 +94,10 @@ class ViewController: UIViewController {
         alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
         present(alertVC, animated: true, completion: nil)
     }
-    
-    private func reset() {
-        
+}
+
+extension UITextView {
+    var containsEqualSign: Bool {
+        return self.text.firstIndex(of: "=") != nil
     }
 }
