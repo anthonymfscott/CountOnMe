@@ -35,7 +35,7 @@ class ExpressionTests: XCTestCase {
         XCTAssertEqual(expression.result, "6")
     }
     
-    func testGivenExpressionIsNotComplete_ThenExpressionIsNotCorrect() {
+    func testExpressionIsNotCorrect() {
         expression.elements = ["1", "+"]
         
         XCTAssertEqual(expression.isCorrect, false)
