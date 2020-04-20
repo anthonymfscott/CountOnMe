@@ -8,13 +8,17 @@
 
 import UIKit
 
+private enum Error {
+    case sign, incomplete, short
+}
+
 class ViewController: UIViewController {
     @IBOutlet weak var textView: UITextView!
     @IBOutlet var numberButtons: [UIButton]!
     
     var expression: Expression!
   
-    // View Life cycles
+    // View life cycles
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -22,7 +26,7 @@ class ViewController: UIViewController {
     }
     
     // View actions
-    @IBAction func tappedNumberButton(_ sender: UIButton) {
+    @IBAction private func numberButtonTapped(_ sender: UIButton) {
         guard let numberText = sender.title(for: .normal) else {
             return
         }
@@ -41,78 +45,59 @@ class ViewController: UIViewController {
         }
     }
     
-//    func tappedOperatorButton(_ sender: UIButton) {
-//        guard let numberText = sender.title(for: .normal) else {
-//           return
-//        }
-//
-//        if expression.canAddOperator {
-//            let operator = sender.title(for: .normal)
-//            addOperator(operator)
-//        } else {
-//            showErrorMessage(.operator)
-//        }
-//    }
-    
-    @IBAction func tappedAdditionButton(_ sender: UIButton) {
+    @IBAction private func signButtonTapped(_ sender: UIButton) {
+        guard let sign = sender.title(for: .normal) else {
+            return
+        }
+        
         if expression.canAddOperator {
-            textView.text.append(" + ")
-            expression.elements.append("+")
+            addSign(sign)
         } else {
-            let alertVC = UIAlertController(title: "Erreur !", message: "Un opérateur est déjà mis !", preferredStyle: .alert)
-            alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-            self.present(alertVC, animated: true, completion: nil)
+            showErrorMessage(.sign)
         }
     }
     
-    @IBAction func tappedSubstractionButton(_ sender: UIButton) {
-        if expression.canAddOperator {
-            textView.text.append(" - ")
-            expression.elements.append("-")
-        } else {
-            let alertVC = UIAlertController(title: "Erreur !", message: "Un opérateur est déjà mis !", preferredStyle: .alert)
-            alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-            self.present(alertVC, animated: true, completion: nil)
-        }
+    private func addSign(_ sign: String) {
+        textView.text.append(" \(sign) ")
+        expression.elements.append(sign)
     }
     
-    @IBAction func tappedMultiplicationButton(_ sender: UIButton) {
-        if expression.canAddOperator {
-            textView.text.append(" x ")
-            expression.elements.append("x")
-        } else {
-            let alertVC = UIAlertController(title: "Erreur !", message: "Un opérateur est déjà mis !", preferredStyle: .alert)
-            alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-            self.present(alertVC, animated: true, completion: nil)
-        }
-    }
-    
-    @IBAction func tappedDivisionButton(_ sender: UIButton) {
-        if expression.canAddOperator {
-            textView.text.append(" / ")
-            expression.elements.append("/")
-        } else {
-            let alertVC = UIAlertController(title: "Erreur !", message: "Un opérateur est déjà mis !", preferredStyle: .alert)
-            alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-            self.present(alertVC, animated: true, completion: nil)
-        }
-    }
-    
-    @IBAction func tappedEqualButton(_ sender: UIButton) {
+    @IBAction private func equalButtonTapped(_ sender: UIButton) {
         guard expression.isCorrect else {
-            let alertVC = UIAlertController(title: "Expression incomplète !", message: "Entrez une expression correcte !", preferredStyle: .alert)
-            alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-            return self.present(alertVC, animated: true, completion: nil)
+            showErrorMessage(.incomplete)
+            return
         }
         
         guard expression.hasEnoughElements else {
-            textView.text = ""
-            expression.reset()
-            let alertVC = UIAlertController(title: "Expression trop courte !", message: "Démarrez un nouveau calcul !", preferredStyle: .alert)
-            alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-            return self.present(alertVC, animated: true, completion: nil)
+            showErrorMessage(.short)
+            return
         }
         
         textView.text.append(" = \(expression.result)")
+    }
+    
+    private func showErrorMessage(_ error: Error) {
+        var title: String
+        var message: String
+        
+        switch error {
+        case .sign:
+            title = "Erreur !"
+            message = "Un opérateur est déjà mis !"
+        case .incomplete:
+            title = "Expression incomplète !"
+            message = "Veuillez entrer une expression correcte."
+        case .short:
+            title = "Expression trop courte !"
+            message = "Veuillez démarrer un nouveau calcul."
+        }
+        
+        let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+        present(alertVC, animated: true, completion: nil)
+    }
+    
+    private func reset() {
+        
     }
 }

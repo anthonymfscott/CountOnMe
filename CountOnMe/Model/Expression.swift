@@ -27,11 +27,11 @@ class Expression {
     var result: String {
         while elements.count > 1 {
             let left = Int(elements[0])!
-            let operand = elements[1]
+            let sign = elements[1]
             let right = Int(elements[2])!
             
             let result: Int
-            switch operand {
+            switch sign {
                 case "+": result = left + right
                 case "-": result = left - right
                 case "x": result = left * right
