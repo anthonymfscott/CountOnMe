@@ -9,52 +9,70 @@
 import Foundation
 
 class Expression {
-    var elements = [String]()
+    var string = ""
+    
+    var elements: [String] {
+        return string.split(separator: " ").map { "\($0)" }
+    }
+    
+    private static let possibleSigns = ["+", "-", "x", "÷"]
     
     // Error check computed variables
-    var isCorrect: Bool {
-        return elements.last != "+" && elements.last != "-" && elements.last != "x" && elements.last != "/"
+    var isCoherent: Bool {
+        for sign in Expression.possibleSigns where elements.last == sign {
+            return false
+        }
+        return true
     }
     
     var hasEnoughElements: Bool {
         return elements.count >= 3
     }
     
-    var canAddOperator: Bool {
-        return elements.last != "+" && elements.last != "-" && elements.last != "x" && elements.last != "/"
+    // déplacer dans Contrôleur ? (logique d'interface)
+    var containsEqualsSign: Bool {
+        return string.firstIndex(of: "=") != nil
     }
     
     var result: String {
-        while elements.count > 1 {
-            let left = Int(elements[0])!
-            let sign = elements[1]
-            let right = Int(elements[2])!
+        var operationsToReduce = elements
+        
+        while operationsToReduce.count > 1 {
+            let left = Float(operationsToReduce[0])!
+            let sign = operationsToReduce[1]
+            let right = Float(operationsToReduce[2])!
             
-            let result: Int
+            let result: Float
             switch sign {
-                case "+": result = left + right
-                case "-": result = left - right
-                case "x": result = left * right
-                case "/": result = left / right
-                default: fatalError("Opérateur inconnu !")
+                case "+":
+                    result = left + right
+                case "-":
+                    result = left - right
+                case "x":
+                    result = left * right
+                case "÷":
+                    guard right != 0 else {
+                        return "Erreur"
+                    }
+                    result = left / right
+                default:
+                    return "Opérateur inconnu !"
             }
             
-            elements = Array(elements.dropFirst(3))
-            elements.insert("\(result)", at: 0)
+            operationsToReduce = Array(operationsToReduce.dropFirst(3))
+            operationsToReduce.insert("\(result)", at: 0)
         }
         
-        return elements.first!
+        let finalResult = simplify(operationsToReduce.first!)
+        
+        return finalResult
     }
     
-    func add(_ newElement: String) {
-        if elements.count > 0 && Int(newElement) != nil && Int(elements.last!) != nil {
-            elements[elements.count - 1] += newElement
-        } else {
-            elements.append(newElement)
+    private func simplify(_ floatNumber: String) -> String {
+        let resultParts = floatNumber.split(separator: ".")
+        for i in resultParts[1] where i != "0" {
+            return floatNumber
         }
-    }
-    
-    func reset() {
-        elements.removeAll()
+        return String(resultParts[0])
     }
 }

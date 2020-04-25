@@ -30,33 +30,38 @@ class ViewController: UIViewController {
     @IBAction private func numberButtonTapped(_ sender: UIButton) {
         guard let numberText = sender.title(for: .normal) else { return }
         
-        if textView.containsEqualSign {
+        if expression.containsEqualsSign || textView.text.contains("Erreur") {
             reset()
         }
         
         textView.text += numberText
-        expression.add(numberText)
+        expression.string += numberText
     }
     
     @IBAction private func signButtonTapped(_ sender: UIButton) {
         guard let sign = sender.title(for: .normal) else { return }
 
-        if textView.containsEqualSign {
-            textView.text = expression.elements[0]
+        guard !expression.elements.isEmpty, !textView.text.contains("Erreur") else { return }
+        
+        // if there's a result from a previous calculation, show it as first element
+        if expression.containsEqualsSign {
+            textView.text = expression.elements.last
+            expression.string = expression.elements.last!
         }
         
-        if expression.canAddOperator {
+        // if a sign can be added, add it; otherwise show related error message
+        if expression.isCoherent {
             textView.text += " \(sign) "
-            expression.add(sign)
+            expression.string += " \(sign) "
         } else {
             showErrorMessage(.lastElementIsSign)
         }
     }
     
-    @IBAction private func equalButtonTapped(_ sender: UIButton) {
-        if textView.containsEqualSign { return }
+    @IBAction private func equalsButtonTapped(_ sender: UIButton) {
+        if expression.containsEqualsSign { return }
         
-        guard expression.isCorrect else {
+        guard expression.isCoherent else {
             showErrorMessage(.expressionIncomplete)
             return
         }
@@ -66,12 +71,24 @@ class ViewController: UIViewController {
             return
         }
         
-        textView.text.append(" = \(expression.result)")
+        textView.text += " = \(expression.result)"
+        expression.string += " = \(expression.result)"
+    }
+    
+    @IBAction func cButtonTapped(_ sender: UIButton) {
+        reset()
+    }
+    
+    @IBAction func decimalButtonTapped(_ sender: UIButton) {
+        guard expression.isCoherent else { return }
+
+        textView.text += "."
+        expression.string += "."
     }
     
     private func reset() {
         textView.text = ""
-        expression.reset()
+        expression.string = ""
     }
     
     private func showErrorMessage(_ error: Error) {
@@ -84,20 +101,14 @@ class ViewController: UIViewController {
             message = "Il y a déjà un opérateur !"
         case .expressionIncomplete:
             title = "Expression incomplète !"
-            message = "Veuillez entrer une expression correcte."
+            message = "Veuillez compléter votre calcul."
         case .expressionTooShort:
             title = "Expression trop courte !"
-            message = "Veuillez démarrer un nouveau calcul."
+            message = "Veuillez continuer votre calcul."
         }
         
         let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
         present(alertVC, animated: true, completion: nil)
-    }
-}
-
-extension UITextView {
-    var containsEqualSign: Bool {
-        return self.text.firstIndex(of: "=") != nil
     }
 }
