@@ -69,9 +69,7 @@ class ExpressionTests: XCTestCase {
         expression.string = "1 + 2"
         
         XCTAssertTrue(expression.isCoherent)
-    }
-    
-    func testExpressionIsNotCoherent() {
+        
         expression.string = "1 + "
         
         XCTAssertFalse(expression.isCoherent)
@@ -99,5 +97,11 @@ class ExpressionTests: XCTestCase {
         expression.string = "1.0 + 2.0"
         
         XCTAssertEqual(expression.result, "3")
+    }
+    
+    func testOperationsPriority() {
+        expression.string = "1 + 2 x 3 - 5 ÷ 2"
+        
+        XCTAssertEqual(expression.result, "4.5")
     }
 }
