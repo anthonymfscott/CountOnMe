@@ -43,7 +43,7 @@ class Expression {
     var result: String {
         var operationsToReduce = elements
         
-        for sign in ["x", "÷"] {
+        for sign in ["x", "÷", "+", "-"] {
             while operationsToReduce.contains(sign) {
                 let signIndex = operationsToReduce.firstIndex(of: sign)!
                 
@@ -52,39 +52,26 @@ class Expression {
                 let right = Float(operationsToReduce[signIndex + 1])!
                 
                 let result: Float
-                if sign == Sign.multiplication.rawValue {
+                switch sign {
+                case "+":
+                    result = left + right
+                case "-":
+                    result = left - right
+                case "x":
                     result = left * right
-                } else {
+                case "÷":
                     guard right != 0 else { return "Erreur" }
                     result = left / right
+                default:
+                    return "Opérateur inconnu !"
                 }
-                
+            
                 for _ in 1...3 {
                     operationsToReduce.remove(at: signIndex - 1)
                 }
                 
                 operationsToReduce.insert("\(result)", at: signIndex - 1)
             }
-        }
-        
-        while operationsToReduce.count > 1 {
-            let left = Float(operationsToReduce[0])!
-            let sign = operationsToReduce[1]
-            let right = Float(operationsToReduce[2])!
-            
-            // utiliser même syntaxe que pour x et ÷ ci-dessus ? permettrait d'éviter le cas default
-            let result: Float
-            switch sign {
-            case "+":
-                result = left + right
-            case "-":
-                result = left - right
-            default:
-                return "Opérateur inconnu !"
-            }
-            
-            operationsToReduce = Array(operationsToReduce.dropFirst(3))
-            operationsToReduce.insert("\(result)", at: 0)
         }
         
         let finalResult = simplify(operationsToReduce.first!)
@@ -94,7 +81,7 @@ class Expression {
     
     private func simplify(_ floatNumber: String) -> String {
         let resultParts = floatNumber.split(separator: ".")
-        for i in resultParts[1] where i != "0" {
+        if resultParts[1] != "0" {
             return floatNumber
         }
         return String(resultParts[0])

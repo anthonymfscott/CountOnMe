@@ -92,13 +92,7 @@ class ExpressionTests: XCTestCase {
 
         XCTAssertEqual(expression.result, "Opérateur inconnu !")
     }
-    
-    func testSimplifyToInt() {
-        expression.string = "1.0 + 2.0"
-        
-        XCTAssertEqual(expression.result, "3")
-    }
-    
+   
     func testOperationsPriority() {
         expression.string = "1 + 2 x 3 - 5 ÷ 2"
         
