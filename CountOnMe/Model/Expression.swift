@@ -9,8 +9,12 @@
 import Foundation
 
 // intérêt ?
-enum Sign: String {
+enum Sign: String, CaseIterable {
     case addition = "+", substraction = "-", multiplication = "x", division = "÷"
+    
+    static var allCasesRawValues: [String] {
+        return Sign.allCases.map { $0.rawValue }
+    }
 }
 
 class Expression {
@@ -20,11 +24,9 @@ class Expression {
         return string.split(separator: " ").map { "\($0)" }
     }
     
-    private static let possibleSigns = ["+", "-", "x", "÷"]
-    
     // Error check computed variables
     var isCoherent: Bool {
-        for sign in Expression.possibleSigns where elements.last == sign {
+        for sign in Sign.allCasesRawValues where elements.last == sign {
             return false
         }
         return true
@@ -34,29 +36,37 @@ class Expression {
         return elements.count >= 3
     }
     
-    // déplacer dans Contrôleur ? (logique d'interface)
     var containsEqualsSign: Bool {
         return string.firstIndex(of: "=") != nil
     }
     
-    // pas trop de logique pour une propriété calculée ?
     var result: String {
         var operationsToReduce = elements
         
-        for sign in ["x", "÷"] {
-            while operationsToReduce.contains(sign) {
-                let signIndex = operationsToReduce.firstIndex(of: sign)!
+        for signArray in ["x", "÷", "+", "-"] {
+            
+            while operationsToReduce.contains(signArray) {
+        
+                let signIndex = operationsToReduce.firstIndex(of: signArray)!
                 
+//                guard lets
                 let left = Float(operationsToReduce[signIndex - 1])!
-                let sign = sign
                 let right = Float(operationsToReduce[signIndex + 1])!
+                let sign = Sign(rawValue: signArray)!
                 
                 let result: Float
-                if sign == Sign.multiplication.rawValue {
+                switch sign {
+                case .addition:
+                    result = left + right
+                case .substraction:
+                    result = left - right
+                case .multiplication:
                     result = left * right
-                } else {
+                case .division:
                     guard right != 0 else { return "Erreur" }
                     result = left / right
+//                default:
+//                    return "Opérateur inconnu !"
                 }
                 
                 for _ in 1...3 {
@@ -64,28 +74,9 @@ class Expression {
                 }
                 
                 operationsToReduce.insert("\(result)", at: signIndex - 1)
+                
             }
-        }
-        
-        while operationsToReduce.count > 1 {
-            let left = Float(operationsToReduce[0])!
-            let sign = operationsToReduce[1]
-            let right = Float(operationsToReduce[2])!
-            
-            // utiliser même syntaxe que pour x et ÷ ci-dessus ? permettrait d'éviter le cas default
-            let result: Float
-            switch sign {
-            case "+":
-                result = left + right
-            case "-":
-                result = left - right
-            default:
-                return "Opérateur inconnu !"
-            }
-            
-            operationsToReduce = Array(operationsToReduce.dropFirst(3))
-            operationsToReduce.insert("\(result)", at: 0)
-        }
+    }
         
         let finalResult = simplify(operationsToReduce.first!)
         // directement appeler simplify dans return ?
@@ -94,7 +85,7 @@ class Expression {
     
     private func simplify(_ floatNumber: String) -> String {
         let resultParts = floatNumber.split(separator: ".")
-        for i in resultParts[1] where i != "0" {
+        if resultParts[1] != "0" {
             return floatNumber
         }
         return String(resultParts[0])
