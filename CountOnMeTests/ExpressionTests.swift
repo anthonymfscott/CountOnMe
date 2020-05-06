@@ -92,11 +92,6 @@ class ExpressionTests: XCTestCase {
 
         XCTAssertEqual(expression.result, "Erreur d'opérateur")
     }
-<<<<<<< HEAD
-   
-    func testOperationsPriority() {
-        expression.string = "1 + 2 x 3 - 5 ÷ 2"
-=======
 
     func testOperationsPriority() {
         expression.input = "1 + 2 x 3 - 5 ÷ 2"
@@ -106,7 +101,6 @@ class ExpressionTests: XCTestCase {
     
     func testAddPoint() {
         expression.input = "1.2"
->>>>>>> refactor
         
         XCTAssertFalse(expression.canAddPoint)
     }

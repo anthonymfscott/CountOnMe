@@ -46,7 +46,6 @@ class Expression {
 
     var result: String {
         var operationsToReduce = elements
-<<<<<<< HEAD
         
         for sign in ["x", "÷", "+", "-"] {
             while operationsToReduce.contains(sign) {
@@ -78,8 +77,6 @@ class Expression {
                 operationsToReduce.insert("\(result)", at: signIndex - 1)
             }
         }
-        
-=======
 
         while operationsToReduce.count > 1 {
             let signIndex = operationsToReduce.firstIndex(where: { $0 == "x" || $0 == "÷" }) ?? 1
@@ -110,7 +107,6 @@ class Expression {
             operationsToReduce.insert("\(result)", at: signIndex - 1)
         }
 
->>>>>>> refactor
         let finalResult = simplify(operationsToReduce.first!)
 
         return finalResult
